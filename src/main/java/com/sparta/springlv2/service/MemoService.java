@@ -48,11 +48,7 @@ public class MemoService {
 
     public List<MemoResponseDto> getAllMemo() {
         List<Memo> memoList = memoRepository.findAll();
-        List<MemoResponseDto> memoResponseDtoList = memoList.stream().sorted((memo1, memo2) -> memo2.getModifiedAt().compareTo(memo1.getModifiedAt())).map(MemoResponseDto::new).toList();
-        for(MemoResponseDto responseDto : memoResponseDtoList) {
-            log.info(responseDto.getComments().toString());
-        }
-        return memoResponseDtoList;
+        return memoList.stream().sorted((memo1, memo2) -> memo2.getModifiedAt().compareTo(memo1.getModifiedAt())).map(MemoResponseDto::new).toList();
     }
 
     public GeneralResponseDto getMemo(Long id) {
