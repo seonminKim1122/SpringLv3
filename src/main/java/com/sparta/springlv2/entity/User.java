@@ -20,8 +20,11 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private boolean isAdmin;
     public User(UserRequestDto userRequestDto) {
         this.username = userRequestDto.getUsername();
         this.password = userRequestDto.getPassword();
+        this.isAdmin = userRequestDto.isAdmin();
     }
 }

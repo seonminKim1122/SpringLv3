@@ -22,7 +22,7 @@ public class UserService {
         Optional<User> found = userRepository.findById(userRequestDto.getUsername());
 
         if (found.isPresent()) {
-            return new StatusResponseDto("이미 회원가입한 사용자입니다.", HttpStatus.ALREADY_REPORTED);
+            return new StatusResponseDto("중복된 username 입니다.", HttpStatus.BAD_REQUEST);
         }
 
         User user = new User(userRequestDto);
@@ -45,7 +45,7 @@ public class UserService {
 
     public User findUserByName(String username) {
         return userRepository.findById(username).orElseThrow(
-                () -> new NullPointerException("등록되지 않은 사용자입니다.")
+                () -> new NullPointerException("회원을 찾을 수 없습니다.")
         );
     }
 }
