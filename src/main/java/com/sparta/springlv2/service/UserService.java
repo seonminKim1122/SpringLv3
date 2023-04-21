@@ -34,7 +34,7 @@ public class UserService {
         try {
             User user = findUserByName(userRequestDto.getUsername());
             if (user.getPassword().equals(userRequestDto.getPassword())) {
-                response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
+                response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.isAdmin()));
                 return new StatusResponseDto("로그인 성공!!", HttpStatus.OK);
             }
             return new StatusResponseDto("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);

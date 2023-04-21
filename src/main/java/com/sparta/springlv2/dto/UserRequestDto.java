@@ -16,5 +16,5 @@ public class UserRequestDto {
     private String password;
 
     @NotNull
-    private boolean isAdmin;
+    private boolean admin;
 }

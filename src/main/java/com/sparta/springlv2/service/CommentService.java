@@ -1,6 +1,9 @@
 package com.sparta.springlv2.service;
 
-import com.sparta.springlv2.dto.*;
+import com.sparta.springlv2.dto.CommentRequestDto;
+import com.sparta.springlv2.dto.CommentResponseDto;
+import com.sparta.springlv2.dto.GeneralResponseDto;
+import com.sparta.springlv2.dto.StatusResponseDto;
 import com.sparta.springlv2.entity.Comment;
 import com.sparta.springlv2.entity.Memo;
 import com.sparta.springlv2.entity.User;
@@ -67,8 +70,8 @@ public class CommentService {
                     () -> new NullPointerException("존재하지 않는 댓글입니다.")
             );
 
-            if (comment.getUser().getUsername().equals(claims.getSubject())) {
-                comment.update(requestDto); // memo.commentList 에 자동 반영되는가??
+            if (comment.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
+                comment.update(requestDto); // 자동 반영되나?
                 return new CommentResponseDto(comment);
             }
 
@@ -92,7 +95,7 @@ public class CommentService {
                     () -> new NullPointerException("존재하지 않는 댓글입니다.")
             );
 
-            if (comment.getUser().getUsername().equals(claims.getSubject())) {
+            if (comment.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
                 commentRepository.delete(comment);
                 return new StatusResponseDto("삭제 성공", HttpStatus.OK);
             }

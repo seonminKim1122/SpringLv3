@@ -30,7 +30,6 @@ public class Memo extends TimeStamped {
     @JoinColumn(name = "username")
     private User user;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "memo", fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
 

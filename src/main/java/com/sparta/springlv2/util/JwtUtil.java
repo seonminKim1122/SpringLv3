@@ -46,12 +46,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성하기
-    public String createToken(String username) {
+    public String createToken(String username, boolean admin) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                 .setSubject(username)
+                .claim("admin", admin)
                 .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                 .signWith(key, signatureAlgorithm)
                 .compact();
@@ -68,7 +69,7 @@ public class JwtUtil {
         return false;
     }
 
-    // 토큰에서 사용자 정보(username) 가져오기
+    // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
         if (token != null && validationToken(token)) {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();

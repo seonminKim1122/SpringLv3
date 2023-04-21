@@ -4,7 +4,6 @@ import com.sparta.springlv2.dto.GeneralResponseDto;
 import com.sparta.springlv2.dto.MemoRequestDto;
 import com.sparta.springlv2.dto.MemoResponseDto;
 import com.sparta.springlv2.dto.StatusResponseDto;
-import com.sparta.springlv2.entity.Comment;
 import com.sparta.springlv2.entity.Memo;
 import com.sparta.springlv2.entity.User;
 import com.sparta.springlv2.repository.MemoRepository;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -66,7 +64,7 @@ public class MemoService {
         Claims claims = jwtUtil.getUserInfoFromToken(token);
         try {
             Memo memo = findMemoById(id);
-            if (memo.getUser().getUsername().equals(claims.getSubject())) {
+            if (memo.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
                 memo.update(requestDto);
                 return new MemoResponseDto(memo);
             }
@@ -85,7 +83,7 @@ public class MemoService {
 
         try {
             Memo memo = findMemoById(id);
-            if (memo.getUser().getUsername().equals(claims.getSubject())) {
+            if (memo.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
                 memoRepository.delete(memo);
                 return new StatusResponseDto("삭제 성공!!", HttpStatus.OK);
             }
