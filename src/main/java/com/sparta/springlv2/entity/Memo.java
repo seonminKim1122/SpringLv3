@@ -1,5 +1,6 @@
 package com.sparta.springlv2.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.springlv2.dto.MemoRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class Memo extends TimeStamped {
     @JoinColumn(name = "username")
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "memo", fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
 

@@ -4,6 +4,7 @@ import com.sparta.springlv2.dto.GeneralResponseDto;
 import com.sparta.springlv2.dto.MemoRequestDto;
 import com.sparta.springlv2.dto.MemoResponseDto;
 import com.sparta.springlv2.dto.StatusResponseDto;
+import com.sparta.springlv2.entity.Comment;
 import com.sparta.springlv2.entity.Memo;
 import com.sparta.springlv2.entity.User;
 import com.sparta.springlv2.repository.MemoRepository;
@@ -11,6 +12,7 @@ import com.sparta.springlv2.repository.UserRepository;
 import com.sparta.springlv2.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemoService {
 
@@ -45,7 +48,11 @@ public class MemoService {
 
     public List<MemoResponseDto> getAllMemo() {
         List<Memo> memoList = memoRepository.findAll();
-        return memoList.stream().sorted((memo1, memo2) -> memo2.getModifiedAt().compareTo(memo1.getModifiedAt())).map(MemoResponseDto::new).collect(Collectors.toList());
+        List<MemoResponseDto> memoResponseDtoList = memoList.stream().sorted((memo1, memo2) -> memo2.getModifiedAt().compareTo(memo1.getModifiedAt())).map(MemoResponseDto::new).toList();
+        for(MemoResponseDto responseDto : memoResponseDtoList) {
+            log.info(responseDto.getComments().toString());
+        }
+        return memoResponseDtoList;
     }
 
     public GeneralResponseDto getMemo(Long id) {
