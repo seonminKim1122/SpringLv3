@@ -16,7 +16,7 @@ public class Comment extends TimeStamped {
     @Column(nullable = false)
     private String content;
 
-    @ManyToOne // 연관관계의 주인
+    @ManyToOne // memo - comment 연관관계의 주인
     @JoinColumn(name = "memo_id")
     private Memo memo;
 
