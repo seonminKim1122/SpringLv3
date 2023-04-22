@@ -29,14 +29,9 @@ public class CommentService {
 
     @Transactional
     public GeneralResponseDto create(Long memoId, CommentRequestDto requestDto, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
-
-        if (claims == null) {
-            return new StatusResponseDto("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
-        }
 
         try {
+            Claims claims = checkToken(request);
             Memo memo = memoRepository.findById(memoId).orElseThrow(
                     () -> new NullPointerException("존재하지 않는 게시글입니다.")
             );
@@ -57,14 +52,9 @@ public class CommentService {
 
     @Transactional
     public GeneralResponseDto update(Long commentId, CommentRequestDto requestDto, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
-
-        if (claims == null) {
-            return new StatusResponseDto("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
-        }
 
         try {
+            Claims claims = checkToken(request);
             Comment comment = commentRepository.findById(commentId).orElseThrow(
                     () -> new NullPointerException("존재하지 않는 댓글입니다.")
             );
@@ -82,14 +72,9 @@ public class CommentService {
 
     @Transactional
     public StatusResponseDto delete(Long commentId, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
-
-        if (claims == null) {
-            return new StatusResponseDto("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
-        }
 
         try {
+            Claims claims = checkToken(request);
             Comment comment = commentRepository.findById(commentId).orElseThrow(
                     () -> new NullPointerException("존재하지 않는 댓글입니다.")
             );
@@ -103,5 +88,13 @@ public class CommentService {
         } catch (NullPointerException e) {
             return new StatusResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public Claims checkToken(HttpServletRequest request) throws NullPointerException {
+        Claims claims = jwtUtil.getUserInfoFromToken(jwtUtil.resolveToken(request));
+        if (claims == null) {
+            throw new NullPointerException("토큰이 유효하지 않습니다.");
+        }
+        return claims;
     }
 }

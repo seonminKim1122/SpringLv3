@@ -8,6 +8,7 @@ import com.sparta.springlv3.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
@@ -18,6 +19,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+
+    @Transactional
     public StatusResponseDto signup(UserRequestDto userRequestDto) {
         Optional<User> found = userRepository.findById(userRequestDto.getUsername());
 
@@ -32,7 +35,10 @@ public class UserService {
 
     public StatusResponseDto login(UserRequestDto userRequestDto, HttpServletResponse response) {
         try {
-            User user = findUserByName(userRequestDto.getUsername());
+            User user = userRepository.findById(userRequestDto.getUsername()).orElseThrow(
+                    () -> new NullPointerException("회원을 찾을 수 없습니다.")
+            );
+
             if (user.getPassword().equals(userRequestDto.getPassword())) {
                 response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.isAdmin()));
                 return new StatusResponseDto("로그인 성공!!", HttpStatus.OK);
@@ -41,11 +47,5 @@ public class UserService {
         } catch(NullPointerException e) {
             return new StatusResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-    }
-
-    public User findUserByName(String username) {
-        return userRepository.findById(username).orElseThrow(
-                () -> new NullPointerException("회원을 찾을 수 없습니다.")
-        );
     }
 }

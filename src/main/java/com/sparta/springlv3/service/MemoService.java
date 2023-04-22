@@ -29,10 +29,9 @@ public class MemoService {
     private final UserRepository userRepository;
     @Transactional
     public GeneralResponseDto createMemo(MemoRequestDto requestDto, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
 
         try {
+            Claims claims = checkToken(request);
             User user = findUserByName(claims.getSubject());
             Memo memo = new Memo(requestDto);
             memo.setUser(user);
@@ -60,9 +59,9 @@ public class MemoService {
 
     @Transactional
     public GeneralResponseDto updateMemo(Long id, MemoRequestDto requestDto, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
+
         try {
+            Claims claims = checkToken(request);
             Memo memo = findMemoById(id);
             if (memo.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
                 memo.update(requestDto);
@@ -78,10 +77,9 @@ public class MemoService {
 
     @Transactional
     public StatusResponseDto deleteMemo(Long id, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
 
         try {
+            Claims claims = checkToken(request);
             Memo memo = findMemoById(id);
             if (memo.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
                 memoRepository.delete(memo);
@@ -105,5 +103,13 @@ public class MemoService {
         return userRepository.findById(username).orElseThrow(
                 () -> new NullPointerException("등록되지 않은 사용자입니다.")
         );
+    }
+
+    public Claims checkToken(HttpServletRequest request) throws NullPointerException {
+        Claims claims = jwtUtil.getUserInfoFromToken(jwtUtil.resolveToken(request));
+        if (claims == null) {
+            throw new NullPointerException("토큰이 유효하지 않습니다.");
+        }
+        return claims;
     }
 }
