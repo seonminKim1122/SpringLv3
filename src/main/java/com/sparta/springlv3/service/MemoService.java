@@ -64,7 +64,7 @@ public class MemoService {
         try {
             Claims claims = checkTokenAndGetInfo(request);
             Memo memo = findMemoById(id);
-            if (memo.getUser().getUsername().equals(claims.getSubject()) || claims.get("auth") == UserRoleEnum.ADMIN) {
+            if (memo.getUser().getUsername().equals(claims.getSubject()) || ((String)claims.get("auth")).equals(UserRoleEnum.ADMIN.getRole())) {
                 memo.update(requestDto);
                 return new MemoResponseDto(memo);
             }
@@ -82,7 +82,8 @@ public class MemoService {
         try {
             Claims claims = checkTokenAndGetInfo(request);
             Memo memo = findMemoById(id);
-            if (memo.getUser().getUsername().equals(claims.getSubject()) || claims.get("auth") == UserRoleEnum.ADMIN) {
+
+            if (memo.getUser().getUsername().equals(claims.getSubject()) || ((String)claims.get("auth")).equals(UserRoleEnum.ADMIN.getRole())) {
                 memoRepository.delete(memo);
                 return new StatusResponseDto("삭제 성공!!", HttpStatus.OK);
             }
