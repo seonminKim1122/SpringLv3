@@ -1,5 +1,6 @@
 package com.sparta.springlv3.util;
 
+import com.sparta.springlv3.entity.UserRoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -46,13 +47,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성하기
-    public String createToken(String username, boolean admin) {
+    public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                 .setSubject(username)
-                .claim("admin", admin)
+                .claim("auth", role)
                 .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                 .signWith(key, signatureAlgorithm)
                 .compact();

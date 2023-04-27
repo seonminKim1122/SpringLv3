@@ -15,6 +15,6 @@ public class UserRequestDto {
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[\\da-zA-z!@#$%^&*]{8,15}$", message = "8 ~ 15자 사이의 알파벳 대소문자와 숫자, 특수문자로 구성되어야 합니다.(알파벳 대소문자, 숫자, 특수문자가 최소 1개씩 포함되어야 합니다)")
     private String password;
 
-    @NotNull
     private boolean admin;
+    private String adminToken = "";
 }

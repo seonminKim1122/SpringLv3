@@ -6,6 +6,7 @@ import com.sparta.springlv3.dto.MemoResponseDto;
 import com.sparta.springlv3.dto.StatusResponseDto;
 import com.sparta.springlv3.entity.Memo;
 import com.sparta.springlv3.entity.User;
+import com.sparta.springlv3.entity.UserRoleEnum;
 import com.sparta.springlv3.repository.MemoRepository;
 import com.sparta.springlv3.repository.UserRepository;
 import com.sparta.springlv3.util.JwtUtil;
@@ -31,7 +32,7 @@ public class MemoService {
     public GeneralResponseDto createMemo(MemoRequestDto requestDto, HttpServletRequest request) {
 
         try {
-            Claims claims = checkToken(request);
+            Claims claims = checkTokenAndGetInfo(request);
             User user = findUserByName(claims.getSubject());
             Memo memo = new Memo(requestDto);
             memo.setUser(user);
@@ -61,9 +62,9 @@ public class MemoService {
     public GeneralResponseDto updateMemo(Long id, MemoRequestDto requestDto, HttpServletRequest request) {
 
         try {
-            Claims claims = checkToken(request);
+            Claims claims = checkTokenAndGetInfo(request);
             Memo memo = findMemoById(id);
-            if (memo.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
+            if (memo.getUser().getUsername().equals(claims.getSubject()) || claims.get("auth") == UserRoleEnum.ADMIN) {
                 memo.update(requestDto);
                 return new MemoResponseDto(memo);
             }
@@ -79,9 +80,9 @@ public class MemoService {
     public StatusResponseDto deleteMemo(Long id, HttpServletRequest request) {
 
         try {
-            Claims claims = checkToken(request);
+            Claims claims = checkTokenAndGetInfo(request);
             Memo memo = findMemoById(id);
-            if (memo.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
+            if (memo.getUser().getUsername().equals(claims.getSubject()) || claims.get("auth") == UserRoleEnum.ADMIN) {
                 memoRepository.delete(memo);
                 return new StatusResponseDto("삭제 성공!!", HttpStatus.OK);
             }
@@ -105,7 +106,7 @@ public class MemoService {
         );
     }
 
-    public Claims checkToken(HttpServletRequest request) throws NullPointerException {
+    public Claims checkTokenAndGetInfo(HttpServletRequest request) throws NullPointerException {
         Claims claims = jwtUtil.getUserInfoFromToken(jwtUtil.resolveToken(request));
         if (claims == null) {
             throw new NullPointerException("토큰이 유효하지 않습니다.");

@@ -4,9 +4,7 @@ import com.sparta.springlv3.dto.UserRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name = "users")
 @Getter
@@ -21,10 +19,11 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private boolean admin = false;
-    public User(UserRequestDto userRequestDto) {
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+    public User(UserRequestDto userRequestDto, UserRoleEnum role) {
         this.username = userRequestDto.getUsername();
         this.password = userRequestDto.getPassword();
-        this.admin = userRequestDto.isAdmin();
+        this.role = role;
     }
 }

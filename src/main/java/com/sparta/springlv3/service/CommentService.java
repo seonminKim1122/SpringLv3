@@ -7,6 +7,7 @@ import com.sparta.springlv3.dto.StatusResponseDto;
 import com.sparta.springlv3.entity.Comment;
 import com.sparta.springlv3.entity.Memo;
 import com.sparta.springlv3.entity.User;
+import com.sparta.springlv3.entity.UserRoleEnum;
 import com.sparta.springlv3.repository.CommentRepository;
 import com.sparta.springlv3.repository.MemoRepository;
 import com.sparta.springlv3.repository.UserRepository;
@@ -59,7 +60,7 @@ public class CommentService {
                     () -> new NullPointerException("존재하지 않는 댓글입니다.")
             );
 
-            if (comment.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
+            if (comment.getUser().getUsername().equals(claims.getSubject()) || claims.get("auth") == UserRoleEnum.ADMIN) {
                 comment.update(requestDto);
                 return new CommentResponseDto(comment);
             }
@@ -79,7 +80,7 @@ public class CommentService {
                     () -> new NullPointerException("존재하지 않는 댓글입니다.")
             );
 
-            if (comment.getUser().getUsername().equals(claims.getSubject()) || (Boolean)claims.get("admin")) {
+            if (comment.getUser().getUsername().equals(claims.getSubject()) || claims.get("auth") == UserRoleEnum.ADMIN) {
                 commentRepository.delete(comment);
                 return new StatusResponseDto("삭제 성공", HttpStatus.OK);
             }
